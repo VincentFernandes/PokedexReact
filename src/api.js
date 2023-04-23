@@ -2,11 +2,11 @@ import axios from "axios"
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-export const getPokemonList = async() => {
+export const getPokemonList = async(i) => {
     const pokemon = await axios.get(
-        `${baseUrl}/pokemon?limit=100&offset=0`
+        `${baseUrl}/generation/${i}`
         )
-    return pokemon.data.results
+    return pokemon.data.pokemon_species
 }
 
 export const searchPokemon = async (q) => {
