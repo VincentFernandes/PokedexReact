@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { getPokemonList, searchPokemon } from "./api"
+import { Link } from 'react-router-dom';
 
 let gen = 1;
 let genRom = 'I';
@@ -8,33 +9,47 @@ const genData = [];
 
 const App = () => {
   const [Pokemon, setPokemon] = useState([])
+  const [Search, setSearch] = useState([])
   const baseImgUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world'
 
   useEffect(() => {
+    getPokemon()
+  }, [])
+
+
+  const getPokemon = () => {
     getPokemonList(gen).then((result) => {
       genData[gen] = result
       sorter(genData[gen])
       setPokemon(genData[gen])
     })
-  }, [])
+  }
 
   const PokemonList = () => {
-    return Pokemon.map((data, i) => {
+    return Pokemon.filter(item => item.name.startsWith(Search)).map((data, i) => {
       return(
-        <div className='Pokemon-wrapper' key={i}>
+        <Link
+          to= "/PokemonDetail"
+          state= {{
+            id: data.id,
+            name: data.name
+          }}
+          className='Pokemon-wrapper'
+          key={i}
+        >
           <img
             className='Pokemon-image'
             src={`${baseImgUrl}/${data.id}.svg`}
           />
-          <h1 className='Pokemon-id'>{`#${data.id}`}</h1>
+          <h1 className='Pokemon-id'>{`#${data.id.toString().padStart(4,'0')}`}</h1>
           <div className='Pokemon-name'>{data.name}</div>
-        </div>
+        </Link>
       )
     })
   }
 
   const search = (q) => {
-    console.log({ q })
+    setSearch(q)
   }
 
   const genChange = (i) => {
@@ -46,13 +61,8 @@ const App = () => {
     if(gen === 4){ genRom = 'IV' } else
     { genRom = 'V' }
 
-    if(genData[gen] == undefined){
-      console.log('masuk und')
-      getPokemonList(gen).then((result) => {
-        genData[gen] = result
-        sorter(genData[gen])
-        setPokemon(genData[gen])
-      })
+    if(genData[gen] === undefined){
+      getPokemon()
     }else{
       setPokemon(genData[gen])
     }

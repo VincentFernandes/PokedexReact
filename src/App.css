@@ -29,7 +29,8 @@
 
 .Pokemon-id {
   font-size: 20px;
-  color: gray;
+  color: #212121;
+  font-weight: normal;
   position: absolute;
   left: 20px;
   top: 0;
@@ -48,6 +49,9 @@
   font-weight: bold;
   border-radius: 3%;
   box-shadow: 3px 3px 5px #440000;
+  text-decoration: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .Pokemon-gen-wrapper {
@@ -109,5 +113,7 @@
 }
 
 .Pokemon-name {
-  margin: 0;
+  font-size: 30px;
+  color: #212121;
+  font-weight: normal;
 }
