@@ -6,7 +6,16 @@ export const getPokemonList = async(i) => {
     const pokemon = await axios.get(
         `${baseUrl}/generation/${i}`
         )
-    return pokemon.data.pokemon_species
+    
+    const temp = pokemon.data.pokemon_species
+    const res = []
+    for(let i=0; i<temp.length; i++){
+        console.log(temp[i].url)
+        const pokemonDetail = await axios.get(temp[i].url)
+        res.push(pokemonDetail)
+    }
+    console.log(res)
+    return pokemon.data.pokemon_species;
 }
 
 export const getPokemonDetail = async(id) => {
@@ -14,9 +23,4 @@ export const getPokemonDetail = async(id) => {
         `${baseUrl}/pokemon/${id}`
         )
     return pokemon.data
-}
-
-export const searchPokemon = async (q) => {
-    const search = await axios.get(q)
-    return
 }

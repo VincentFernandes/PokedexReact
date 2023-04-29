@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { getPokemonList, searchPokemon } from "./api"
+import { getPokemonList } from "./api"
 import { Link } from 'react-router-dom';
 
 let gen = 1;
@@ -35,7 +35,7 @@ const App = () => {
             name: data.name
           }}
           className='Pokemon-wrapper'
-          key={i}
+          key={data.id}
         >
           <img
             className='Pokemon-image'
