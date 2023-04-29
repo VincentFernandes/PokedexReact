@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getPokemonDetail } from '../api';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import './PokemonDetail.css'
-import { Link } from 'react-router-dom';
 
 const PokemonDetail = () => {
     const [PokemonData, setPokemonData] = useState([])
