@@ -1,14 +1,24 @@
 import { useEffect, useState } from 'react';
-import { getPokemonDetail, getPokemonSpecies } from '../api';
+import { getPokemonSpecies } from '../api';
 import { useLocation, Link } from 'react-router-dom';
+import { useSpring, animated } from 'react-spring';
 import './PokemonDetail.css'
 
 let text_entries = ''
 const PokemonDetail = () => {
     const [PokemonDataSpecies, setPokemonDataSpecies] = useState([])
     const [FlavorText, setFlavorText] = useState(0)
-    const [PokemonColor, setPokemonColor] = useState('white')
-    const [PokemonData, setPokemonData] = useState(useLocation().state.data)
+    const [PokemonColor, setPokemonColor] = useState('red')
+    const PokemonData = useLocation().state.data
+    const pokemonStats = PokemonData.stats
+    const AnimatedDiv = animated.div;
+    let maxStat = 0
+    let total = 0
+    for(let i=0; i<pokemonStats.length; i++){
+        if(maxStat < pokemonStats[i].base_stat){ maxStat = pokemonStats[i].base_stat }
+        total+= pokemonStats[i].base_stat
+
+    }
     const baseImgUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
     const color_type = {
         'normal': '#A8A878',
@@ -156,7 +166,7 @@ const PokemonDetail = () => {
 
     const getPokemonData = async() => {
         const res = await getPokemonSpecies(PokemonData.id)
-        text_entries = res.flavor_text_entries[8].flavor_text
+        text_entries = res.flavor_text_entries[0].flavor_text
         const colorChange = {
             'black': '#607d8b',
             'blue': '#81d4fa',
@@ -169,10 +179,63 @@ const PokemonDetail = () => {
             'white': '#d5dbe1',
             'yellow': '#ffd600'
         }
-        console.log(res.color.name)
         setPokemonColor(colorChange[res.color.name])
         setPokemonDataSpecies(res)
     }
+
+    const gaugehp = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[0].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
+
+    const gaugeattack = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[1].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
+
+    const gaugedefense = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[2].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
+
+    const gaugespecialattack = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[3].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
+
+    const gaugespecialdefense = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[4].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
+
+    const gaugespeed = useSpring({
+        backgroundColor: PokemonColor,
+        width: pokemonStats[5].base_stat/maxStat*250,
+        from: { width: 0 },
+        config: {
+            duration: 1000,
+        }
+    });
 
     const Capitalize = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -183,7 +246,135 @@ const PokemonDetail = () => {
         setFlavorText(i)
     }
 
-    console.log(PokemonData)
+    const PokemonProfile = () => {
+        return(
+            <div className='PokemonDetail-profile'>
+                <div className='Pokemon-profile-title'>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>ID</h1></div>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>Height</h1></div>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>Weight</h1></div>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>Abilites</h1></div>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>Type</h1></div>
+                    <div className='Pokemon-title-wrap'><h1 className='profile-title'>Forms</h1></div>
+                </div>
+
+                <div className='Pokemon-profile-desc'>
+                    <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`#${PokemonData.id.toString().padStart(4,'0')}`}</h1></div>
+                    <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`${PokemonData.height/10} m`}</h1></div>
+                    <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`${PokemonData.weight/10} kg`}</h1></div>
+                    <div className='profile-abilities'>
+                        {
+                            PokemonData.abilities.map((data) => {
+                                return(
+                                    <div style={{ backgroundColor: colorsAbility[data.ability.name] }} className='Pokemon-title-desc'>
+                                        <h1 className='ability'>{Capitalize(data.ability.name)}</h1>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+
+                    <div className='profile-abilities'>
+                        {
+                            PokemonData.types.map((data) => {
+                                return(
+                                    <div style={{ backgroundColor: color_type[data.type.name] }} className='Pokemon-title-desc'>
+                                        <h1 className='ability'>{Capitalize(data.type.name)}</h1>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+
+                    <div className='profile-abilities'>
+                        {
+                            PokemonDataSpecies.varieties !== undefined && PokemonDataSpecies.varieties.map((data) => {
+                                return(
+                                    <div style={{ backgroundColor: PokemonColor }} className='Pokemon-title-desc'>
+                                        <h1 className='ability'>{Capitalize(data.pokemon.name)}</h1>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const PokemonStatus = () => {
+        return(
+            <div className='PokemonDetail-status'>
+                <h1 className='PokemonDetail-status-title'>Status</h1>
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Hp</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugehp}
+                                className='status-gauge'>
+                                {pokemonStats[0].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Attack</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugeattack}
+                                className='status-gauge'>
+                                {pokemonStats[1].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Defense</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugedefense}
+                                className='status-gauge'>
+                                {pokemonStats[2].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Sp.Attack</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugespecialattack}
+                                className='status-gauge'>
+                                {pokemonStats[3].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Sp.Defense</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugespecialdefense}
+                                className='status-gauge'>
+                                {pokemonStats[4].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Speed</h1>
+                        <div className='gauge-background'>
+                            <AnimatedDiv style={gaugespeed}
+                                className='status-gauge'>
+                                {pokemonStats[5].base_stat}
+                            </AnimatedDiv>
+                        </div>
+                    </div>
+
+                    <div className='Status-wrapper'>
+                        <h1 className='title-status'>Total</h1>
+                        <h1 className='profile-desc'>{total}</h1>
+                    </div>
+
+                    <div className='div-test'/>
+            </div>
+        )
+    }
 
     return (
         <div className="PokemonDetail">
@@ -212,66 +403,14 @@ const PokemonDetail = () => {
             </div>
 
             <div className='PokemonDetail-container'>
-                <div className='PokemonDetail-profile'>
-                    <div className='Pokemon-profile-title'>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>ID</h1></div>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>Height</h1></div>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>Weight</h1></div>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>Abilites</h1></div>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>Type</h1></div>
-                        <div className='Pokemon-title-wrap'><h1 className='profile-title'>Forms</h1></div>
-                    </div>
-
-                    <div className='Pokemon-profile-desc'>
-                        <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`#${PokemonData.id.toString().padStart(4,'0')}`}</h1></div>
-                        <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`${PokemonData.height/10} m`}</h1></div>
-                        <div className='Pokemon-title-desc'><h1 className='profile-desc'>{`${PokemonData.weight/10} kg`}</h1></div>
-                        <div className='profile-abilities'>
-                            {
-                                PokemonData.abilities.map((data) => {
-                                    return(
-                                        <div style={{ backgroundColor: colorsAbility[data.ability.name] }} className='Pokemon-title-desc'>
-                                            <h1 className='ability'>{Capitalize(data.ability.name)}</h1>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-
-                        <div className='profile-abilities'>
-                            {
-                                PokemonData.types.map((data) => {
-                                    return(
-                                        <div style={{ backgroundColor: color_type[data.type.name] }} className='Pokemon-title-desc'>
-                                            <h1 className='ability'>{Capitalize(data.type.name)}</h1>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-
-                        <div className='profile-abilities'>
-                            {
-                                PokemonDataSpecies.varieties !== undefined && PokemonDataSpecies.varieties.map((data) => {
-                                    return(
-                                        <div style={{ backgroundColor: PokemonColor }} className='Pokemon-title-desc'>
-                                            <h1 className='ability'>{Capitalize(data.pokemon.name)}</h1>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-                    </div>
-                </div>
+                <PokemonProfile />
                 <div className='PokemonDetail-image'>
                     <img
                         className='Pokemon-sprites'
                         src={`${baseImgUrl}/${PokemonData.id}.png`}
                     />
                 </div>
-                <div className='PokemonDetail-status'>
-
-                </div>
+                <PokemonStatus />
             </div>
         </div>
     );

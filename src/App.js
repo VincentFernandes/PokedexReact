@@ -62,6 +62,7 @@ const App = () => {
       if(changePage && genData[Gen] !== undefined){
         setPokemon(genData[Gen])
       }else{
+        setPokemon([])
         getPokemon()
       }
     }else{
