@@ -71,7 +71,7 @@
 }
 
 .PokemonDetail-container {
-    width: 80%;
+    width: 90%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -80,14 +80,14 @@
 }
 
 .Pokemon-sprites {
-    height: 600px;
-    width: 600px;
+    height: 500px;
+    width: 500px;
     object-fit: contain;
 }
 
 .PokemonDetail-profile {
     height: 600px;
-    width: 400px;
+    width: 30%;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
@@ -129,7 +129,7 @@
 
 .PokemonDetail-status {
     width: 400px;
-    height: 600px;
+    height: 30%;
     display: flex;
     flex-direction: column;
     justify-content: center;
